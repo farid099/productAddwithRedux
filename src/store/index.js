@@ -7,7 +7,7 @@ import getBasketProducts from "./getBasketProducts"
 const rootReducer = combineReducers({
     changeCategory,
     getProducts,
-    getBasketProducts
+    getBasketProducts,
 })
 
 export default rootReducer;

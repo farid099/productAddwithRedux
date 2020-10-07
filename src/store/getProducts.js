@@ -11,10 +11,9 @@ const getProducts =(state = initialProductState,action)=>{
         }
     }
     if(action.type === "FILTER_PRODUCTS"){
-        let url = "http://localhost:3000/products?categoryId="+action.payload;
-        const products = fetch(url)
-       .then((resp) => resp.json());
-        return {products};
+        return{
+            products:action.payload
+        }
     }
     return state;
 };

@@ -1,10 +1,6 @@
-const initialCategoryState={
-    categories:[],
-    currentCategory:{}
-};
+import intitalState from "../redux/reducers/intitalState";
 
-
-const changeCategory =(state = initialCategoryState,action)=>{
+const changeCategory =(state = intitalState,action)=>{
 
     if(action.type === "CHANGE_CATEGORY"){
         return {

@@ -1,28 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Table } from "reactstrap";
+import axios from "axios";
+import Pagination from "../pagination/Pagination";
 
 function ListProduct(props) {
-  const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [steps,setSteps] = useState(5);
+  const [currentPage, setCurrentPage]=useState(1);
+
 
   useEffect(() => {
-    if (!props.productList) {
-      const getProducts = () => {
-        const products = fetch("http://localhost:3000/products").then((resp) =>
-          resp.json()
-        );
-        // .then(props.onRetrieveData);
-        props.onRetrieveData(products);
-      };
-      getProducts();
-    }
-  }, [props.onRetrieveData, props, props.productList]);
+    if(!Object.keys(props.currentCategory).length){
+      axios.get("http://localhost:3000/products")
+      .then((resp) => setProducts(resp.data))
 
-  useEffect(() => {
-    if (!!props.productList) {
-      props.productList.then((data) => setProducts(data));
-    }
-  }, [props.productList]);
+    }else{
+      let url="http://localhost:3000/products?categoryId="+props.currentCategory.id
+      axios.get(url)
+      .then((resp) => setProducts(resp.data))
+      setCurrentPage(1)
+    } 
+ 
+  }, [props.currentCategory]);
+
+
+  const indexOfLastProduct = currentPage * steps;
+  const indexOfFirstProduct = indexOfLastProduct - steps;
+  const currentProducts = products.slice(indexOfFirstProduct,indexOfLastProduct)
+
+  const changePage =(number)=>{
+    setCurrentPage(number)
+  }
 
   return (
     <div>
@@ -38,7 +47,7 @@ function ListProduct(props) {
         </thead>
         <tbody>
           {!!products &&
-            products.map((product, index) => (
+            currentProducts.map((product, index) => (
               <tr key={product.id}>
                 <th scope="row">{index + 1}</th>
                 <td>{product.productName}</td>
@@ -51,6 +60,8 @@ function ListProduct(props) {
             ))}
         </tbody>
       </Table>
+      {/* <Pagination steps={currentProducts.length} totalProduct={products.length} changePage={changePage}></Pagination> */}
+      <Pagination steps={steps} totalProduct={products.length} changePage={changePage}></Pagination>
     </div>
   );
 }
@@ -58,13 +69,12 @@ function ListProduct(props) {
 const mapStateToProps = (state) => {
   return {
     productList: state.getProducts.products,
+    currentCategory: state.changeCategory.currentCategory,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    filterProduct: (product) =>
-      dispatch({ type: "FILTER_PRODUCTS", payload: product }),
     onRetrieveData: (data) =>
       dispatch({ type: "FETCH_PRODUCTS", payload: data }),
       addBasket: (data) =>

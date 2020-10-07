@@ -1,12 +1,20 @@
-import initialState from "./initialState";
 import * as actionTypes from "../actions/actionTypes";
+import intitalState from "./intitalState";
 
 
-const changeCategoryReducer = (state=initialState.currentCategory,action) =>{
+const changeCategoryReducer = (state=intitalState,action) =>{
 
     switch (action) {
         case actionTypes.CHANGE_CATEGORY:
-            return action.payload
+            return {
+                ...state,
+                currentCategory:action.payload   
+            }
+            case actionTypes.FETCH_CATEGORIES:
+                return {
+                    ...state,
+                    categories:action.payload
+                }
         default:
             return state;
     }
